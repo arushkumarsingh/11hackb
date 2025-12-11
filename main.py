@@ -4,7 +4,7 @@ import os
 import json
 import tempfile
 from src.ffmpeg import extract_frames_every_second
-from src.keyframe_analysis import describe_image
+from src.keyframe_analysis import describe_image, define_cuts
 
 def main(video_path):
     # Create a temporary directory for frames

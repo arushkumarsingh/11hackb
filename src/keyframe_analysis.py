@@ -164,3 +164,46 @@ Based on the provided step-wise summaries from key application screenshots, crea
         max_tokens=1000 # Increased slightly to accommodate structure, adjust as needed
     )
     return response.choices[0].message.content
+
+def define_cuts(descriptions: dict, openai_model: str = "gpt-4o-mini") -> list:
+    """
+    Analyzes descriptions to define cuts for branding and peak moments.
+
+    Args:
+        descriptions (dict): Dictionary of {time_sec: description}
+        openai_model (str): OpenAI model to use.
+
+    Returns:
+        list: List of cuts, each as {"start": int, "end": int, "reason": str}
+    """
+    # Prepare the descriptions as a string
+    desc_text = "\n".join([f"{time}: {desc}" for time, desc in descriptions.items()])
+
+    response = openai.chat.completions.create(
+        model=openai_model,
+        messages=[
+            {"role": "system", "content": "You are an expert at analyzing video descriptions to identify key moments like branding or peak scenes."},
+            {
+                "role": "user",
+                "content": f"""Analyze the following video descriptions (time in seconds: description) and identify segments (cuts) that contain branding of the product or peak moments of the video.
+
+Descriptions:
+{desc_text}
+
+Output a JSON list of cuts, each with "start" (int, seconds), "end" (int, seconds), and "reason" (string, e.g., "branding" or "peak moment").
+
+Example output: [{"start": 0, "end": 5, "reason": "branding"}, {"start": 10, "end": 15, "reason": "peak moment"}]
+
+Only output the JSON list, no other text."""
+            }
+        ],
+        max_tokens=500
+    )
+    cuts_text = response.choices[0].message.content
+    if cuts_text is None:
+        cuts_text = "[]"
+    try:
+        cuts = json.loads(cuts_text.strip())
+    except json.JSONDecodeError:
+        cuts = []
+    return cuts

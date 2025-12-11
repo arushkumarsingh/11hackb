@@ -1,2 +1,4 @@
 - [x] Modify main.py to accept video path, extract frames, describe with OpenAI, save JSON
 - [x] Add describe_image function in src/keyframe_analysis.py
+- [x] Add define_cuts function to analyze descriptions and define cuts for branding/peak moments
+- [x] Update main.py to call define_cuts and save cuts to JSON
