@@ -1,0 +1,2 @@
+- [x] Modify main.py to accept video path, extract frames, describe with OpenAI, save JSON
+- [x] Add describe_image function in src/keyframe_analysis.py
