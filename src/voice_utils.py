@@ -14,7 +14,7 @@ def text_to_speech(
     output_path: str | Path = "output.mp3",
     voice_id: str = "JBFqnCBsd6RMkjVDRZzb",  # Default: George
     model_id: str = "eleven_multilingual_v2",
-) -> Path:
+) -> tuple:
     """
     Convert text to speech using Eleven Labs API.
 
@@ -25,7 +25,9 @@ def text_to_speech(
         model_id: Eleven Labs model ID to use.
 
     Returns:
-        Path to the saved audio file.
+        A tuple containing:
+            - audio_generator: The generator yielding audio chunks from the API.
+            - output_path: Path to the saved audio file.
     """
     output_path = Path(output_path)
 
@@ -40,7 +42,7 @@ def text_to_speech(
         for chunk in audio_generator:
             f.write(chunk)
 
-    return output_path
+    return audio_generator, output_path
 
 
 if __name__ == "__main__":
