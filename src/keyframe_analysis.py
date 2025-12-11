@@ -1,6 +1,7 @@
 import openai
 import os
 import base64
+import json
 from typing import List, Optional
 
 # Summarize a single keyframe image using OpenAI Vision

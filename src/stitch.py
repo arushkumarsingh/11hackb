@@ -17,9 +17,19 @@ from pathlib import Path
 
 from loguru import logger
 
+# Optional imports for functions that may not be available
+try:
+    from .ffmpeg_tools import get_video_dimensions
+except ImportError:
+    get_video_dimensions = None
 
-from .ffmpeg_tools import get_video_dimensions
-from .video_analysis import get_face_centroid
+try:
+    from .video_analysis import get_face_centroid, generate_crop_from_centroid
+except ImportError:
+    get_face_centroid = None
+    generate_crop_from_centroid = None
+
+from .define_cuts import TimeLineCutList
 
 
 def stitch_tool_from_config(config: StitchConfig) -> str:
