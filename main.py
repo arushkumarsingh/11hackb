@@ -10,12 +10,13 @@ import json
 import sys
 import tempfile
 from pathlib import Path
-from loguru import logger
 
 from src.ffmpeg import extract_frames_every_second
 from src.keyframe_analysis import describe_image, define_cuts
 from src.define_cuts import TimeLineCutList, TimeCut
 from src.stitch import cut_and_stitch_timeline
+import logging 
+logger = logging.getLogger(__name__)
 
 
 def main(video_path: str, output_path: str | None = None, reencode: bool = True):

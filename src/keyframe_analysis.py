@@ -3,11 +3,18 @@ import os
 import base64
 import json
 from typing import List, Optional
+from dotenv import load_dotenv
 
 # Summarize a single keyframe image using OpenAI Vision
 
 from PIL import Image
 import io
+
+# Load environment variables
+load_dotenv()
+
+# Initialize OpenAI client with API key from environment
+openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def describe_image(image_path: str, openai_model: str = "gpt-4o-mini") -> str:
     """
@@ -33,7 +40,7 @@ def describe_image(image_path: str, openai_model: str = "gpt-4o-mini") -> str:
     img_b64 = base64.b64encode(img_bytes).decode("utf-8")
     image_url = f"data:image/jpeg;base64,{img_b64}"
 
-    response = openai.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=openai_model,
         messages=[
             {"role": "system", "content": "You are an expert at describing images."},
@@ -74,7 +81,7 @@ def summarize_keyframe(image_path: str, timestamp: str, openai_model: str = "gpt
     else:
         context_instruction = ""
 
-    response = openai.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=openai_model,
         messages=[
             {"role": "system", "content": "You are an expert at analyzing UI screenshots and describing user actions and application state."},
@@ -156,7 +163,7 @@ Based on the provided step-wise summaries from key application screenshots, crea
 
     full_user_prompt = instruction_prompt + "\n" + input_data + "\n\n---\n**How-To User Journey Guide:**"
 
-    response = openai.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model="gpt-4o", # Keep model or adjust
         messages=[
             {"role": "system", "content": system_prompt},
@@ -180,7 +187,7 @@ def define_cuts(descriptions: dict, openai_model: str = "gpt-4o-mini") -> list:
     # Prepare the descriptions as a string
     desc_text = "\n".join([f"{time}: {desc}" for time, desc in descriptions.items()])
 
-    response = openai.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=openai_model,
         messages=[
             {"role": "system", "content": "You are an expert at analyzing video descriptions to identify key moments like branding or peak scenes."},

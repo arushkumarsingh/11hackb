@@ -14,8 +14,9 @@ All cropped videos must have the same dimensions for successful stitching.
 
 import subprocess
 from pathlib import Path
+import logging
+logger = logging.getLogger(__name__)
 
-from loguru import logger
 
 # Optional imports for functions that may not be available
 try:
@@ -32,53 +33,55 @@ except ImportError:
 from .define_cuts import TimeLineCutList
 
 
-def stitch_tool_from_config(config: StitchConfig) -> str:
-    """
-    Stitch videos using StitchConfig Pydantic model with automatic validation.
-    
-    Args:
-        config: StitchConfig model with videos, output_path, and reencode settings
-    
-    Returns:
-        Success or error message string
-    
-    Note:
-        The StitchConfig model automatically validates that:
-        - All video files exist
-        - All crop coordinates are valid (x2 > x1, y2 > y1)
-        - All cropped videos have the same dimensions (required for FFmpeg concat)
-    """
-    try:
-        output_path = config.output_path.strip('"\'')
-        
-        logger.info("🔗 STITCH: Starting stitch process (using StitchConfig)")
-        logger.info(f"   📹 Number of videos: {len(config.videos)}")
-        logger.info(f"   📤 Output video: {output_path}")
-        logger.info(f"   🔧 Re-encode: {config.reencode}")
-        
-        # Get dimensions from first video (all should be the same after validation)
-        first_dimensions = config.get_crop_dimensions()
-        logger.info(
-            f"   📐 Cropped dimensions: {first_dimensions[0]}x{first_dimensions[1]} (width x height)"
-        )
-        
-        for i, video in enumerate(config.videos):
-            logger.info(
-                f"   📹 Video {i + 1}: {video.path} (crop: {video.x1},{video.y1} to {video.x2},{video.y2})"
-            )
-        
-        # Convert to dict format for stitch_videos
-        crop_map = config.to_crop_map()
-        
-        stitch_videos(crop_map, output_path, config.reencode)
-
-        logger.info("   ✅ Stitch completed successfully")
-        return f"SUCCESS: Merged video saved to {output_path}"
-
-    except Exception as e:
-        error_msg = f"❌ STITCH FAILED: {e!s}"
-        logger.exception(error_msg)
-        return error_msg
+# NOTE: This function requires StitchConfig which is not defined.
+# Commented out to avoid NameError. Uncomment and define StitchConfig if needed.
+# def stitch_tool_from_config(config: StitchConfig) -> str:
+#     """
+#     Stitch videos using StitchConfig Pydantic model with automatic validation.
+#     
+#     Args:
+#         config: StitchConfig model with videos, output_path, and reencode settings
+#     
+#     Returns:
+#         Success or error message string
+#     
+#     Note:
+#         The StitchConfig model automatically validates that:
+#         - All video files exist
+#         - All crop coordinates are valid (x2 > x1, y2 > y1)
+#         - All cropped videos have the same dimensions (required for FFmpeg concat)
+#     """
+#     try:
+#         output_path = config.output_path.strip('"\'')
+#         
+#         logger.info("🔗 STITCH: Starting stitch process (using StitchConfig)")
+#         logger.info(f"   📹 Number of videos: {len(config.videos)}")
+#         logger.info(f"   📤 Output video: {output_path}")
+#         logger.info(f"   🔧 Re-encode: {config.reencode}")
+#         
+#         # Get dimensions from first video (all should be the same after validation)
+#         first_dimensions = config.get_crop_dimensions()
+#         logger.info(
+#             f"   📐 Cropped dimensions: {first_dimensions[0]}x{first_dimensions[1]} (width x height)"
+#         )
+#         
+#         for i, video in enumerate(config.videos):
+#             logger.info(
+#                 f"   📹 Video {i + 1}: {video.path} (crop: {video.x1},{video.y1} to {video.x2},{video.y2})"
+#             )
+#         
+#         # Convert to dict format for stitch_videos
+#         crop_map = config.to_crop_map()
+#         
+#         stitch_videos(crop_map, output_path, config.reencode)
+# 
+#         logger.info("   ✅ Stitch completed successfully")
+#         return f"SUCCESS: Merged video saved to {output_path}"
+# 
+#     except Exception as e:
+#         error_msg = f"❌ STITCH FAILED: {e!s}"
+#         logger.exception(error_msg)
+#         return error_msg
 
 def stitch_videos(crop_map, output_path, reencode=True):
     """

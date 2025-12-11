@@ -7,7 +7,8 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from pathlib import Path
 from typing import Optional
-from loguru import logger
+import logging 
+logger = logging.getLogger(__name__)
 
 from main import main
 
